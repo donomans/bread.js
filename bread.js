@@ -5,8 +5,9 @@ function Bread(fn, fork) {
   this.zone = fork || new Zone();
   this.slices = [];
   this.notes = [];
-  this.zone.onZoneEnter = this._enter.bind(this);
-  this.zone.onZoneLeave = this._exit.bind(this);
+
+  this.onZoneEnter = this._enter.bind(this);
+  this.onZoneLeave = this._exit.bind(this);
 
   this.totalTime = 0;
   this.lastTime = 0;
@@ -22,17 +23,18 @@ Bread.ptorotype = {
   },
   start: function() {
     this.lastTime = Bread._performance();
-    this.zone.run(fn);
+    this.zone.fork(this).run(this.fn);
     return this;
   },
   subset: function(forkFn) {
-    var sub = new Bread(forkFn, this.zone.fork());
+    var sub = new Bread(forkFn, this.zone.fork()); //is this necessary?
     this.slices.push(sub);
     return sub.start();
   }
 };
 
 Bread.note = function (note){
+  ///this might deserve a more proper timestamping of the note
   window.bread.notes.push(note);
 };
 
@@ -43,10 +45,10 @@ Bread.run = function (fn) {
 
 Bread.time = function () {
   var tempTime = 0;
-  window.bread.slices.map(function(slice){
+  window.bread.slices.forEach(function(slice){
     tempTime += slice.totalTime;
   });
-  return totalTime;//window.bread.totalTime;
+  return tempTime;//window.bread.totalTime;
 };
 
 Bread.slice = function (fn) {
@@ -73,6 +75,11 @@ function Zone(parentZone, data) {
 }
 
 
+
+
+
+
+///Zone.js from https://github.com/angular/zone.js.git
 Zone.prototype = {
   constructor: Zone,
 
