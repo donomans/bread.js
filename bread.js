@@ -35,7 +35,15 @@ Bread.ptorotype = {
 
 Bread.note = function (note){
   ///this might deserve a more proper timestamping of the note
-  window.bread.notes.push(note);
+  ///use .mark() and .measure() ?
+  ///create a uniqe id or something and use mark with the guid
+  ///then use measure between the ids and match up the notes
+  /// note = { id: "", note: note};
+
+  window.bread.notes.push({
+    id: "",
+    note: note
+  });
 };
 
 Bread.run = function (fn) {
@@ -55,7 +63,8 @@ Bread.slice = function (fn) {
   return window.bread.subset(fn);
 };
 
-
+Bread._mark = window.performance.mark;
+Bread._measure = window.performance.measure;
 Bread._performance = (window.performance) ?
   (performance.now || performance.webkitNow || performance.msNow
     || performance.mozNow || Date.now
