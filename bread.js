@@ -59,7 +59,9 @@ Bread.time = function () {
   return tempTime;//window.bread.totalTime;
 };
 
-Bread.slice = function (fn) {
+Bread.slice = function (fn, note) {
+  if(note)
+    Bread.note(note);
   return window.bread.subset(fn);
 };
 
@@ -68,7 +70,8 @@ Bread._measure = window.performance.measure;
 Bread._performance = (window.performance) ?
   (performance.now || performance.webkitNow || performance.msNow
     || performance.mozNow || Date.now
-    || function () { return +(new Date()); } ) : Date.now;
+    || function () { return +(new Date()); } )
+  : Date.now || function () { return +(new Date()); };
 
 
 function Zone(parentZone, data) {
