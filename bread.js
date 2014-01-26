@@ -8,6 +8,7 @@ function Bread(fn, fork) {
 
   this.onZoneEnter = this._enter.bind(this);
   this.onZoneLeave = this._exit.bind(this);
+  this.onError = false;
 
   this.totalTime = 0;
   this.lastTime = 0;
@@ -87,11 +88,23 @@ function Zone(parentZone, data) {
 }
 
 
-
+//TODO: fn.caller.name ? polyfill
 
 
 
 ///Zone.js from https://github.com/angular/zone.js.git
+function Zone(parentZone, data) {
+  var zone = (arguments.length) ? Object.create(parentZone) : this;
+
+  zone.parent = parentZone;
+
+  Object.keys(data || {}).forEach(function(property) {
+    zone[property] = data[property];
+  });
+
+  return zone;
+}
+
 Zone.prototype = {
   constructor: Zone,
 
@@ -116,14 +129,14 @@ Zone.prototype = {
     window.zone = this;
 
     try {
-      this.onZoneEnter();
+      this.onZoneEnter(fn.caller.name);
       result = fn.apply(applyTo, applyWith);
     } catch (e) {
       if (zone.onError) {
         zone.onError(e);
       }
     } finally {
-      this.onZoneLeave();
+      this.onZoneLeave(fn.caller.name);
       window.zone = oldZone;
     }
     return result;
