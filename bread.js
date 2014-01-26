@@ -66,31 +66,19 @@ Bread.slice = function (fn, note) {
   return window.bread.subset(fn);
 };
 
+//TODO: performance.mark() polyfill
 Bread._mark = window.performance.mark;
+
+//TODO: performance.measure() polyfill
 Bread._measure = window.performance.measure;
+
 Bread._performance = (window.performance) ?
   (performance.now || performance.webkitNow || performance.msNow
     || performance.mozNow || Date.now
     || function () { return +(new Date()); } )
   : Date.now || function () { return +(new Date()); };
 
-
-function Zone(parentZone, data) {
-  var zone = (arguments.length) ? Object.create(parentZone) : this;
-
-  zone.parent = parentZone;
-
-  Object.keys(data || {}).forEach(function(property) {
-    zone[property] = data[property];
-  });
-
-  return zone;
-}
-
-
 //TODO: fn.caller.name ? polyfill
-
-
 
 ///Zone.js from https://github.com/angular/zone.js.git
 function Zone(parentZone, data) {

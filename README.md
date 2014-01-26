@@ -3,7 +3,7 @@ bread.js
 
 Performance timing library for front-end javascript using a slightly modified Zone.js
 
-To use it by bootstrapping your javascript app with it:
+Use it by bootstrapping your javascript app with it:
 
     Bread.run(yourMainFn);
 
