@@ -1,7 +1,7 @@
 bread.js
 ========
 
-Performance timing library for front-end javascript using a slightly modified Zone.js
+Performance timing and profiling library for front-end javascript using a slightly modified Zone.js
 
 Use it by bootstrapping your javascript app with it:
 

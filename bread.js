@@ -14,7 +14,7 @@ function Bread(fn, fork) {
   this.lastTime = 0;
 }
 
-Bread.ptorotype = {
+Bread.prototype = {
   constructor: Bread,
   _exit: function () {
     this.totalTime += (Bread._performance() - this.lastTime);
