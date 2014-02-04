@@ -16,14 +16,20 @@ function Bread(fn, fork) {
 
 Bread.prototype = {
   constructor: Bread,
-  _exit: function () {
-    this.totalTime += (Bread._performance() - this.lastTime);
+  _exit: function (fn) {
+    this.totalTime += (Bread.time() - this.lastTime);
   },
-  _enter: function () {
-    this.lastTime = Bread._performance();
+  _enter: function (fn) {
+    this.lastTime = Bread.time();
+    this.notes.push({
+      id: "",
+      called: true,
+      note: "called some function named: " + fn.name, //parse out name if available?
+      time: Bread.time()
+    });
   },
   start: function() {
-    this.lastTime = Bread._performance();
+    this.lastTime = Bread.time();
     this.zone.fork(this).run(this.fn);
     return this;
   },
@@ -31,6 +37,10 @@ Bread.prototype = {
     var sub = new Bread(forkFn, this.zone.fork()); //is this necessary?
     this.slices.push(sub);
     return sub.start();
+  },
+  compile: function() {
+    ///compile the current result data
+    ///create a tree of all the notes and slices
   }
 };
 
@@ -43,7 +53,9 @@ Bread.note = function (note){
 
   window.bread.notes.push({
     id: "",
-    note: note
+    called: false,
+    note: note,
+    time: bread.time() //to find where this note was added
   });
 };
 
@@ -67,18 +79,17 @@ Bread.slice = function (fn, note) {
 };
 
 //TODO: performance.mark() polyfill
-Bread._mark = window.performance.mark;
+Bread.mark = window.performance.mark;
 
 //TODO: performance.measure() polyfill
-Bread._measure = window.performance.measure;
+Bread.measure = window.performance.measure;
 
-Bread._performance = (window.performance) ?
+Bread.time = (window.performance) ?
   (performance.now || performance.webkitNow || performance.msNow
     || performance.mozNow || Date.now
     || function () { return +(new Date()); } )
   : Date.now || function () { return +(new Date()); };
 
-//TODO: fn.caller.name ? polyfill
 
 ///Zone.js from https://github.com/angular/zone.js.git
 function Zone(parentZone, data) {
@@ -117,21 +128,21 @@ Zone.prototype = {
     window.zone = this;
 
     try {
-      this.onZoneEnter(fn.caller.name);
+      this.onZoneEnter(fn);
       result = fn.apply(applyTo, applyWith);
     } catch (e) {
       if (zone.onError) {
         zone.onError(e);
       }
     } finally {
-      this.onZoneLeave(fn.caller.name);
+      this.onZoneLeave(fn);
       window.zone = oldZone;
     }
     return result;
   },
 
-  onZoneEnter: function () {},
-  onZoneLeave: function () {}
+  onZoneEnter: function (fn) {},
+  onZoneLeave: function (fn) {}
 };
 
 Zone.patchFn = function (obj, fnNames) {
